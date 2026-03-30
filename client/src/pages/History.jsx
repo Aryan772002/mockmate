@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import api from '../api'
 
 export default function History({ onHome }) {
   const [sessions, setSessions] = useState([])
@@ -14,7 +14,7 @@ export default function History({ onHome }) {
 
   const fetchSessions = async () => {
     try {
-      const res = await axios.get('/api/interview/sessions', {
+      const res = await api.get('/api/interview/sessions', {
         headers: { Authorization: `Bearer ${token}` }
       })
       setSessions(res.data)
@@ -37,31 +37,29 @@ export default function History({ onHome }) {
   }
 
   if (loading) return (
-    <div style={{backgroundColor: '#0f172a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+    <div style={{backgroundColor: '#0a0f1e', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
       <p style={{color: '#6366f1', fontSize: '1.2rem'}}>Loading sessions...</p>
     </div>
   )
 
   return (
-    <div style={{backgroundColor: '#0f172a', minHeight: '100vh', padding: '2rem'}}>
+    <div style={{backgroundColor: '#0a0f1e', minHeight: '100vh', padding: '2rem', fontFamily: 'system-ui, sans-serif'}}>
       <div style={{maxWidth: '700px', margin: '0 auto'}}>
-
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
-          <h1 style={{color: 'white', fontSize: '1.8rem', fontWeight: 'bold'}}>Session History 📋</h1>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', background: '#111827', padding: '1rem 1.5rem', borderRadius: '16px', border: '1px solid #1f2937'}}>
+          <h1 style={{color: 'white', fontSize: '1.3rem', fontWeight: 'bold'}}>📋 Session History</h1>
           <button onClick={onHome} style={{padding: '0.5rem 1rem', background: '#6366f1', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>
             Back to Home
           </button>
         </div>
 
         {sessions.length === 0 ? (
-          <div style={{background: '#1e293b', borderRadius: '12px', padding: '3rem', textAlign: 'center'}}>
+          <div style={{background: '#111827', borderRadius: '12px', padding: '3rem', textAlign: 'center', border: '1px solid #1f2937'}}>
             <p style={{color: '#94a3b8', fontSize: '1.1rem'}}>No sessions yet! Start your first interview 🎯</p>
           </div>
         ) : (
           sessions.map((session, i) => (
-            <div key={i} style={{background: '#1e293b', borderRadius: '12px', padding: '1.25rem', marginBottom: '1rem', cursor: 'pointer', border: selected === i ? '2px solid #6366f1' : '2px solid transparent'}}
+            <div key={i} style={{background: '#111827', borderRadius: '12px', padding: '1.25rem', marginBottom: '1rem', cursor: 'pointer', border: selected === i ? '1px solid #6366f1' : '1px solid #1f2937'}}
               onClick={() => setSelected(selected === i ? null : i)}>
-              
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
                   <p style={{color: 'white', fontWeight: 'bold', fontSize: '1rem'}}>{session.role}</p>
@@ -72,9 +70,8 @@ export default function History({ onHome }) {
                   <p style={{color: '#94a3b8', fontSize: '0.75rem'}}>avg score</p>
                 </div>
               </div>
-
               {selected === i && (
-                <div style={{marginTop: '1rem', borderTop: '1px solid #334155', paddingTop: '1rem'}}>
+                <div style={{marginTop: '1rem', borderTop: '1px solid #1f2937', paddingTop: '1rem'}}>
                   {session.questions.map((q, j) => (
                     <div key={j} style={{marginBottom: '0.75rem'}}>
                       <div style={{display: 'flex', justifyContent: 'space-between'}}>

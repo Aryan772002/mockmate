@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import api from '../api'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 export default function Dashboard({ onHome }) {
@@ -14,7 +14,7 @@ export default function Dashboard({ onHome }) {
 
   const fetchSessions = async () => {
     try {
-      const res = await axios.get('/api/interview/sessions', {
+      const res = await api.get('/api/interview/sessions', {
         headers: { Authorization: `Bearer ${token}` }
       })
       setSessions(res.data)
@@ -25,19 +25,17 @@ export default function Dashboard({ onHome }) {
   }
 
   if (loading) return (
-    <div style={{backgroundColor: '#0f172a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+    <div style={{backgroundColor: '#0a0f1e', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
       <p style={{color: '#6366f1', fontSize: '1.2rem'}}>Loading dashboard...</p>
     </div>
   )
 
-  // Prepare chart data
   const chartData = sessions.slice().reverse().map((s, i) => ({
     name: `#${i + 1}`,
     score: s.avgScore,
     role: s.role
   }))
 
-  // Role wise average
   const roleMap = {}
   sessions.forEach(s => {
     if (!roleMap[s.role]) roleMap[s.role] = { total: 0, count: 0 }
@@ -49,7 +47,6 @@ export default function Dashboard({ onHome }) {
     avg: Math.round(roleMap[role].total / roleMap[role].count)
   }))
 
-  // Stats
   const totalSessions = sessions.length
   const avgScore = totalSessions > 0
     ? Math.round(sessions.reduce((sum, s) => sum + s.avgScore, 0) / totalSessions)
@@ -57,42 +54,38 @@ export default function Dashboard({ onHome }) {
   const bestScore = totalSessions > 0
     ? Math.max(...sessions.map(s => s.avgScore))
     : 0
-  const streak = totalSessions
 
   return (
-    <div style={{backgroundColor: '#0f172a', minHeight: '100vh', padding: '2rem'}}>
+    <div style={{backgroundColor: '#0a0f1e', minHeight: '100vh', padding: '2rem', fontFamily: 'system-ui, sans-serif'}}>
       <div style={{maxWidth: '800px', margin: '0 auto'}}>
-
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
-          <h1 style={{color: 'white', fontSize: '1.8rem', fontWeight: 'bold'}}>Dashboard 📊</h1>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', background: '#111827', padding: '1rem 1.5rem', borderRadius: '16px', border: '1px solid #1f2937'}}>
+          <h1 style={{color: 'white', fontSize: '1.3rem', fontWeight: 'bold'}}>📊 Dashboard</h1>
           <button onClick={onHome} style={{padding: '0.5rem 1rem', background: '#6366f1', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer'}}>
             Back to Home
           </button>
         </div>
 
         {totalSessions === 0 ? (
-          <div style={{background: '#1e293b', borderRadius: '12px', padding: '3rem', textAlign: 'center'}}>
+          <div style={{background: '#111827', borderRadius: '12px', padding: '3rem', textAlign: 'center', border: '1px solid #1f2937'}}>
             <p style={{color: '#94a3b8', fontSize: '1.1rem'}}>No data yet! Complete an interview to see your stats 🎯</p>
           </div>
         ) : (
           <>
-            {/* Stats cards */}
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem', marginBottom: '2rem'}}>
               {[
                 { label: 'Total Sessions', value: totalSessions, color: '#6366f1' },
                 { label: 'Avg Score', value: `${avgScore}/10`, color: '#f59e0b' },
                 { label: 'Best Score', value: `${bestScore}/10`, color: '#22c55e' },
-                { label: 'Interviews', value: `${streak} 🔥`, color: '#ef4444' },
+                { label: 'Interviews', value: `${totalSessions} 🔥`, color: '#ef4444' },
               ].map((stat, i) => (
-                <div key={i} style={{background: '#1e293b', borderRadius: '12px', padding: '1.25rem', textAlign: 'center', borderTop: `3px solid ${stat.color}`}}>
+                <div key={i} style={{background: '#111827', borderRadius: '12px', padding: '1.25rem', textAlign: 'center', borderTop: `3px solid ${stat.color}`, border: '1px solid #1f2937'}}>
                   <p style={{color: stat.color, fontSize: '1.5rem', fontWeight: 'bold'}}>{stat.value}</p>
                   <p style={{color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.25rem'}}>{stat.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Score trend chart */}
-            <div style={{background: '#1e293b', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem'}}>
+            <div style={{background: '#111827', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem', border: '1px solid #1f2937'}}>
               <h2 style={{color: 'white', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem'}}>Score Trend 📈</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={chartData}>
@@ -105,8 +98,7 @@ export default function Dashboard({ onHome }) {
               </ResponsiveContainer>
             </div>
 
-            {/* Role wise chart */}
-            <div style={{background: '#1e293b', borderRadius: '12px', padding: '1.5rem'}}>
+            <div style={{background: '#111827', borderRadius: '12px', padding: '1.5rem', border: '1px solid #1f2937'}}>
               <h2 style={{color: 'white', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem'}}>Performance by Role 🎯</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={roleData}>
@@ -120,7 +112,6 @@ export default function Dashboard({ onHome }) {
             </div>
           </>
         )}
-
       </div>
     </div>
   )

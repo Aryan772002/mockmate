@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import axios from 'axios'
+import api from './api'
 import Login from './pages/Login.jsx'
 import Home from './pages/Home.jsx'
 import Interview from './pages/Interview.jsx'
@@ -36,7 +36,7 @@ export default function App() {
   const handleFinish = async (questions) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post('/api/interview/session', {
+      await api.post('/api/interview/session', {
         role: selectedRole.label,
         questions
       }, {
